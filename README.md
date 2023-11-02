@@ -1,4 +1,4 @@
-#  yf_thread
+#  far_thread
 linux系统环境下，使用c++14标准对POSIX提供的线程接口进行封装
 代码实例都使用valgrind进行过内存泄漏检测
 ## 线程创建
