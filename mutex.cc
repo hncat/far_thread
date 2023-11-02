@@ -1,9 +1,9 @@
+#include "mutex.h"
+
 #include <assert.h>
 #include <errno.h>
 
-#include "mutex.h"
-
-namespace yf {
+namespace far {
 mutex::mutex() : _mutex(PTHREAD_MUTEX_INITIALIZER) {}
 
 mutex::~mutex() { pthread_mutex_destroy(&_mutex); }
@@ -21,7 +21,8 @@ atomic_lock::atomic_lock() : _mutex{true} {}
 
 void atomic_lock::lock() {
   bool islock = true;
-  while (!_mutex.compare_exchange_weak(islock, false, std::memory_order_relaxed)) {
+  while (
+      !_mutex.compare_exchange_weak(islock, false, std::memory_order_relaxed)) {
     islock = true;
   }
 }
@@ -60,4 +61,4 @@ bool spin_lock::try_lock() {
 }
 
 void spin_lock::unlock() { pthread_spin_unlock(&_spin); }
-}  // namespace yf
+}  // namespace far

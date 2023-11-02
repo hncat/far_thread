@@ -1,10 +1,10 @@
-#ifndef __YF_COND_VAR_H__
-#define __YF_COND_VAR_H__
+#ifndef __FAR_COND_VAR_H__
+#define __FAR_COND_VAR_H__
 
 #include "lock.h"
 #include "type_traits.h"
 
-namespace yf {
+namespace far {
 class conditional_variable {
  public:
   conditional_variable();
@@ -24,6 +24,6 @@ class conditional_variable {
  private:
   pthread_cond_t _cond;
 };
-}  // namespace yf
+}  // namespace far
 
 #endif

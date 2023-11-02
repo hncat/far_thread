@@ -1,12 +1,12 @@
-#ifndef __YF_MUTEX_H__
-#define __YF_MUTEX_H__
+#ifndef __FAR_MUTEX_H__
+#define __FAR_MUTEX_H__
 
 #include <pthread.h>
 
 #include <atomic>
 #include <type_traits>
 
-namespace yf {
+namespace far {
 // mutex已加锁不加锁策略
 struct adopt_lock_t {
   explicit adopt_lock_t() = default;
@@ -74,5 +74,5 @@ class spin_lock : public mutex_basic {
  private:
   pthread_spinlock_t _spin;
 };
-}  // namespace yf
+}  // namespace far
 #endif

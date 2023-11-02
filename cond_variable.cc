@@ -1,6 +1,6 @@
-#include "cond_var.h"
+#include "cond_variable.h"
 
-namespace yf {
+namespace far {
 conditional_variable::conditional_variable()
     : _cond(PTHREAD_COND_INITIALIZER) {}
 
@@ -13,4 +13,4 @@ void conditional_variable::wait(lock_guard<mutex> &lock) {
 void conditional_variable::notfiy_one() { pthread_cond_signal(&_cond); }
 
 void conditional_variable::notify_all() { pthread_cond_broadcast(&_cond); }
-}  // namespace yf
+}  // namespace far

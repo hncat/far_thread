@@ -1,12 +1,12 @@
-#ifndef __YF_LOCK_H__
-#define __YF_LOCK_H__
+#ifndef __FAR_LOCK_H__
+#define __FAR_LOCK_H__
 
 #include <type_traits>
 
 #include "mutex.h"
 #include "shared_mutex.h"
 
-namespace yf {
+namespace far {
 #define assert_unlock(__mutex, __owns) assert(__mutex &&__owns)
 #define assert_lock(__mutex, __owns) assert_lock(__mutex, !__owns)
 
@@ -188,6 +188,6 @@ template <typename Mutex>
 void swap(shared_lock<Mutex> &__x, shared_lock<Mutex> &__y) {
   __x.swap(__y);
 }
-}  // namespace yf
+}  // namespace far
 
 #endif

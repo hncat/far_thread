@@ -1,9 +1,9 @@
-#ifndef __YF_SEM_H__
-#define __YF_SEM_H__
+#ifndef __FAR_SEM_H__
+#define __FAR_SEM_H__
 
 #include <semaphore.h>
 
-namespace yf {
+namespace far {
 class sem {
  public:
   explicit sem(int value, bool shared = false);
@@ -16,6 +16,6 @@ class sem {
  private:
   sem_t _sem;
 };
-}  // namespace yf
+}  // namespace far
 
 #endif

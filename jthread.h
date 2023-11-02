@@ -1,8 +1,8 @@
-#ifndef __YF_JTHREAD_H__
-#define __YF_JTHREAD_H__
+#ifndef __FAR_JTHREAD_H__
+#define __FAR_JTHREAD_H__
 #include "thread.h"
 
-namespace yf {
+namespace far {
 class jthread {
  public:
   jthread() = default;
@@ -51,5 +51,5 @@ class jthread {
   thread _t;
 };
 void swap(jthread &jt1, jthread &jt2) { jt1.swap(jt2); }
-}  // namespace yf
+}  // namespace far
 #endif

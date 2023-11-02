@@ -1,5 +1,5 @@
-#ifndef __YF_THREAD_H__
-#define __YF_THREAD_H__
+#ifndef __FAR_THREAD_H__
+#define __FAR_THREAD_H__
 
 #include <assert.h>
 #include <pthread.h>
@@ -14,7 +14,7 @@
 
 #include "sem.h"
 
-namespace yf {
+namespace far {
 struct this_thread {
   /**
    * @return 线程id
@@ -35,7 +35,8 @@ struct this_thread {
     }
     return _tid_str;
   }
-private:
+
+ private:
   static thread_local uint32_t _tid;
   static thread_local std::string _tid_str;
 };
@@ -65,9 +66,7 @@ class thread {
   thread(const thread &) = delete;
   thread &operator=(const thread &) = delete;
 
-  thread(thread &&t) {
-    swap(t);
-  }
+  thread(thread &&t) { swap(t); }
 
   thread &operator=(thread &&t) {
     if (&t == this) return *this;
@@ -82,8 +81,8 @@ class thread {
             typename = decltype(std::declval<Func>()(std::declval<Args>()...))>
   thread(Func &&func, Args &&...args) {
     using pack_type = std::tuple<thread *, Func, Args...>;
-    auto taskPack{
-        new pack_type{this, std::forward<Func>(func), std::forward<Args>(args)...}};
+    auto taskPack{new pack_type{this, std::forward<Func>(func),
+                                std::forward<Args>(args)...}};
     struct ThreadFunc {
       static void *_run(void *arg) {
         auto _taskPack = static_cast<pack_type *>(arg);
@@ -192,7 +191,7 @@ class thread {
 
   /**
    * @return 线程id
-  */
+   */
   uint32_t id() const { return _id; }
 
   /**
@@ -227,5 +226,5 @@ class thread {
  * 交换两个线程
  */
 void swap(thread &t1, thread &t2) { t1.swap(t2); }
-}  // namespace yf
+}  // namespace far
 #endif
