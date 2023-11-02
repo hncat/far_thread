@@ -47,7 +47,7 @@ void consumeTask(int num) {
     {
       far::lock_guard<far::mutex> lock(tmutex);
       cond.wait_for(
-          lock, [](int cnt) { return tasks.empty() && conusem < cnt; }, num);
+          lock, [](int cnt) { return !tasks.empty() && conusem < cnt; }, num);
       ++conusem;
       if (conusem > num) {
         cond.notify_all();
