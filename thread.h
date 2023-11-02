@@ -36,6 +36,11 @@ struct this_thread {
     return _tid_str;
   }
 
+  /**
+   * @brief 让出cpu时间片
+   */
+  static void yield() { sched_yield(); }
+
  private:
   static thread_local uint32_t _tid;
   static thread_local std::string _tid_str;
@@ -133,7 +138,7 @@ class thread {
   }
 
   /**
-   * 等待线程结束
+   * @brief 等待线程结束
    */
   void join() {
     int ret = pthread_join(_handle, nullptr);
@@ -143,7 +148,7 @@ class thread {
   }
 
   /**
-   * 线程分离
+   * @brief 线程分离
    */
   void detach() {
     int ret = pthread_detach(_handle);
@@ -152,12 +157,18 @@ class thread {
     _handle = 0;
   }
 
+  /**
+   * @brief 是否可执行等待线程执行完毕
+   */
   bool joinable() const { return _joinable; }
 
+  /**
+   * @brief 获取原生的线程句柄
+   */
   handle_t thread_handle() const { return _handle; }
 
   /**
-   * 交换两个线程
+   * @brief 交换两个线程
    */
   void swap(thread &t) {
     std::swap(_joinable, t._joinable);
@@ -165,7 +176,7 @@ class thread {
   }
 
   /**
-   * 设置线程的cpu绑定
+   * @brief 设置线程的cpu绑定
    * @param cpu_code cpu编号
    */
   void set_affinity_np(uint32_t cpu_code) {
@@ -173,7 +184,7 @@ class thread {
   }
 
   /**
-   * 设置线程的cpu绑定
+   * @brief 设置线程的cpu绑定
    * @param handle 线程id
    * @param cpu_code cpu编号
    */
@@ -185,7 +196,7 @@ class thread {
   }
 
   /**
-   * 获取线程绑定的cpu编号
+   * @brief 获取线程绑定的cpu编号
    */
   uint32_t get_affinity_np() const { return get_affinity_np(_handle); }
 
@@ -195,7 +206,7 @@ class thread {
   uint32_t id() const { return _id; }
 
   /**
-   * 获取线程绑定的cpu编号
+   * @brief 获取线程绑定的cpu编号
    * @param handle 线程id
    */
   static uint32_t get_affinity_np(handle_t handle) {
@@ -223,7 +234,7 @@ class thread {
 };
 
 /**
- * 交换两个线程
+ * @brief 交换两个线程
  */
 void swap(thread &t1, thread &t2) { t1.swap(t2); }
 }  // namespace far
