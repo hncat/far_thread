@@ -19,7 +19,7 @@ struct this_thread {
   /**
    * @return 线程id
    */
-  static uint32_t get_id() {
+  static inline uint32_t get_id() {
     if (__builtin_expect(_tid == 0, 0)) {
       _tid = syscall(SYS_gettid);
     }
@@ -29,7 +29,7 @@ struct this_thread {
   /**
    * @return 线程id(to string)
    */
-  static const std::string &id_to_string() {
+  static inline const std::string &id_to_string() {
     if (__builtin_expect(_tid_str.empty() == true, 0)) {
       _tid_str = std::to_string(get_id());
     }
@@ -39,7 +39,7 @@ struct this_thread {
   /**
    * @brief 让出cpu时间片
    */
-  static void yield() { sched_yield(); }
+  static inline void yield() { sched_yield(); }
 
  private:
   static thread_local uint32_t _tid;
@@ -140,7 +140,7 @@ class thread {
   /**
    * @brief 等待线程结束
    */
-  void join() {
+  inline void join() {
     int ret = pthread_join(_handle, nullptr);
     assert(ret == 0);
     _joinable = false;
@@ -150,7 +150,7 @@ class thread {
   /**
    * @brief 线程分离
    */
-  void detach() {
+  inline void detach() {
     int ret = pthread_detach(_handle);
     assert(ret == 0);
     _joinable = false;
@@ -160,17 +160,17 @@ class thread {
   /**
    * @brief 是否可执行等待线程执行完毕
    */
-  bool joinable() const { return _joinable; }
+  inline bool joinable() const { return _joinable; }
 
   /**
    * @brief 获取原生的线程句柄
    */
-  handle_t thread_handle() const { return _handle; }
+  inline handle_t thread_handle() const { return _handle; }
 
   /**
    * @brief 交换两个线程
    */
-  void swap(thread &t) {
+  inline void swap(thread &t) {
     std::swap(_joinable, t._joinable);
     std::swap(_handle, t._handle);
   }
@@ -179,7 +179,7 @@ class thread {
    * @brief 设置线程的cpu绑定
    * @param cpu_code cpu编号
    */
-  void set_affinity_np(uint32_t cpu_code) {
+  inline void set_affinity_np(uint32_t cpu_code) {
     set_affinity_np(_handle, cpu_code);
   }
 
@@ -188,7 +188,7 @@ class thread {
    * @param handle 线程id
    * @param cpu_code cpu编号
    */
-  static void set_affinity_np(handle_t handle, uint32_t cpu_code) {
+  static inline void set_affinity_np(handle_t handle, uint32_t cpu_code) {
     cpu_set_t cpu_set;
     CPU_ZERO(&cpu_set);
     CPU_SET(cpu_code, &cpu_set);
@@ -198,18 +198,18 @@ class thread {
   /**
    * @brief 获取线程绑定的cpu编号
    */
-  uint32_t get_affinity_np() const { return get_affinity_np(_handle); }
+  inline uint32_t get_affinity_np() const { return get_affinity_np(_handle); }
 
   /**
    * @return 线程id
    */
-  uint32_t id() const { return _id; }
+  inline uint32_t id() const { return _id; }
 
   /**
    * @brief 获取线程绑定的cpu编号
    * @param handle 线程id
    */
-  static uint32_t get_affinity_np(handle_t handle) {
+  static inline uint32_t get_affinity_np(handle_t handle) {
     cpu_set_t cpu_set;
     CPU_ZERO(&cpu_set);
     pthread_getaffinity_np(handle, sizeof(cpu_set_t), &cpu_set);
@@ -224,7 +224,7 @@ class thread {
   /**
    * @return cpu核心数
    */
-  static uint32_t get_core_count() { return get_nprocs_conf(); }
+  static inline uint32_t get_core_count() { return get_nprocs_conf(); }
 
  private:
   bool _joinable{false};
@@ -236,6 +236,6 @@ class thread {
 /**
  * @brief 交换两个线程
  */
-void swap(thread &t1, thread &t2) { t1.swap(t2); }
+inline void swap(thread &t1, thread &t2) { t1.swap(t2); }
 }  // namespace far
 #endif

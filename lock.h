@@ -23,7 +23,7 @@ class lock_guard {
   ~lock_guard() { _mutex.unlock(); }
   lock_guard(const lock_guard &) = delete;
   lock_guard &operator=(const lock_guard &) = delete;
-  mutex_reference get() { return _mutex; }
+  inline mutex_reference get() { return _mutex; }
 
  private:
   mutex_reference _mutex;
@@ -65,28 +65,28 @@ class unique_lock {
     _lock.swap(*this);
     return *this;
   }
-  void lock() {
+  inline void lock() {
     assert_lock(_mutex, _owns);
     _mutex->lock();
     _owns = true;
   }
-  bool try_lock() {
+  inline bool try_lock() {
     assert_lock(_mutex, _owns);
     _owns = _mutex->try_lock();
     return _owns;
   }
-  void unlock() {
+  inline void unlock() {
     assert_unlock(_mutex, _owns);
     _mutex->unlock();
     _owns = false;
   }
-  void swap(unique_lock &_lock) {
+  inline void swap(unique_lock &_lock) {
     std::swap(_mutex, _lock._mutex);
     std::swap(_owns, _lock._owns);
   }
-  bool owns_lock() const { return _owns; }
-  mutex_pointer get() { return _mutex; }
-  mutex_pointer release() {
+  inline bool owns_lock() const { return _owns; }
+  inline mutex_pointer get() { return _mutex; }
+  inline mutex_pointer release() {
     mutex_pointer __ret = _mutex;
     _mutex = nullptr;
     _owns = false;
@@ -106,7 +106,7 @@ class unique_lock {
 };
 
 template <typename Mutex>
-void swap(unique_lock<Mutex> &__x, unique_lock<Mutex> &__y) {
+inline void swap(unique_lock<Mutex> &__x, unique_lock<Mutex> &__y) {
   __x.swap(__y);
 }
 

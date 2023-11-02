@@ -31,25 +31,27 @@ class jthread {
     }
   }
 
-  void join() { _t.join(); }
+  inline void join() { _t.join(); }
 
-  void detach() { _t.detach(); }
+  inline void detach() { _t.detach(); }
 
-  bool joinable() { return _t.joinable(); }
+  inline bool joinable() { return _t.joinable(); }
 
-  thread::handle_t thread_handle() const { return _t.thread_handle(); }
+  inline thread::handle_t thread_handle() const { return _t.thread_handle(); }
 
-  void swap(jthread &jt) { jt._t.swap(_t); }
+  inline void swap(jthread &jt) { jt._t.swap(_t); }
 
-  void set_affinity_np(uint32_t cpu_code) { _t.set_affinity_np(cpu_code); }
+  inline void set_affinity_np(uint32_t cpu_code) {
+    _t.set_affinity_np(cpu_code);
+  }
 
-  uint32_t get_affinity_np() const { return _t.get_affinity_np(); }
+  inline uint32_t get_affinity_np() const { return _t.get_affinity_np(); }
 
-  uint32_t id() const { return _t.id(); }
+  inline uint32_t id() const { return _t.id(); }
 
  private:
   thread _t;
 };
-void swap(jthread &jt1, jthread &jt2) { jt1.swap(jt2); }
+inline void swap(jthread &jt1, jthread &jt2) { jt1.swap(jt2); }
 }  // namespace far
 #endif

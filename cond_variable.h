@@ -13,7 +13,7 @@ class conditional_variable {
   template <typename Func, typename... Args,
             typename = typename std::enable_if<
                 !is_result_void<Func, Args...>::value>::type>
-  void wait_for(lock_guard<mutex> &lock, Func &&func, Args &&...args) {
+  inline void wait_for(lock_guard<mutex> &lock, Func &&func, Args &&...args) {
     while (!func(std::forward<Args>(args)...)) {
       wait(lock);
     }
