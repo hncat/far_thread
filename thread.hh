@@ -1,7 +1,6 @@
-#ifndef __FAR_THREAD_H__
-#define __FAR_THREAD_H__
+#ifndef __FAR_THREAD_HH__
+#define __FAR_THREAD_HH__
 
-#include <assert.h>
 #include <pthread.h>
 #include <stdint.h>
 #include <sys/syscall.h>
@@ -12,7 +11,7 @@
 #include <tuple>
 #include <type_traits>
 
-#include "sem.h"
+#include "sem.hh"
 
 namespace far {
 struct this_thread {

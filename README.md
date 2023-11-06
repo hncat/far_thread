@@ -5,7 +5,7 @@ linux系统环境下，使用c++14标准对POSIX提供的线程接口进行封�
 实现的核心技术使用tuple实现类型擦除，从而实现类似标准库提供的thread接口
 ```cpp
 #include <iostream>
-#include "thread.h"
+#include "thread.hh"
 
 // 1. 使用lambda创建线程
 void teste01() {
@@ -69,9 +69,9 @@ void test03() {
 ```cpp
 #include <iostream>
 
-#include "lock.h"
-#include "mutex.h"
-#include "thread.h"
+#include "lock.hh"
+#include "mutex.hh"
+#include "thread.hh"
 
 far::mutex g_mutex;
 far::mutex g_mutex1;
@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
 ```cpp
 #include <iostream>
 
-#include "jthread.h"
+#include "jthread.hh"
 
 void test() { std::cout << far::this_thread::get_id() << " test()\n"; }
 

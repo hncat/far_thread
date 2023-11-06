@@ -1,6 +1,7 @@
 #include <iostream>
+#include <future>
 
-#include "jthread.h"
+#include "jthread.hh"
 
 void test() { std::cout << far::this_thread::id_to_string() << " test()\n"; }
 
@@ -11,6 +12,7 @@ void test01(int num, std::string &name) {
 }
 
 int main() {
+  std::future<int> fa;
   std::cout << far::this_thread::get_id() << " main()\n";
   for (int i = 0; i < 100; ++i) {
     far::jthread jt{test};

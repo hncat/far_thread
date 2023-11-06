@@ -3,15 +3,16 @@
 #include <atomic>
 #include <iostream>
 #include <vector>
+#include <condition_variable>
 
-#include "cond_variable.h"
-#include "lock.h"
-#include "mutex.h"
-#include "sem.h"
-#include "thread.h"
+#include "condition_variable.hh"
+#include "lock.hh"
+#include "mutex.hh"
+#include "sem.hh"
+#include "thread.hh"
 
 class Task {
-public:
+ public:
   Task() = default;
   Task(int id) : taskId(id) {}
   void doTask() {
@@ -19,7 +20,7 @@ public:
     std::cout << "doTask taskId: " << taskId << '\n';
   }
 
-private:
+ private:
   int taskId;
 };
 
@@ -45,8 +46,8 @@ void consumeTask(int num) {
   while (true) {
     Task task;
     {
-      far::lock_guard<far::mutex> lock(tmutex);
-      cond.wait_for(
+      far::unique_lock<far::mutex> lock(tmutex);
+      cond.wait(
           lock, [](int cnt) { return !tasks.empty() && conusem < cnt; }, num);
       ++conusem;
       if (conusem > num) {
@@ -61,12 +62,29 @@ void consumeTask(int num) {
   }
 }
 
+void run1() {
+  {
+    far::unique_lock<far::mutex> lock{tmutex};
+    cond.wait(lock);
+    printf("threadId: %u\n", far::this_thread::get_id());
+  }
+}
+
 int main(int argc, char *argv[]) {
-  far::thread t(addTask, 20);
-  far::thread t1(consumeTask, 20);
-  far::thread t2(consumeTask, 20);
-  t.join();
+  // far::thread t(addTask, 20);
+  // far::thread t1(consumeTask, 20);
+  // far::thread t2(consumeTask, 20);
+  // t.join();
+  // t1.join();
+  // t2.join();
+  far::thread t1{run1};
+  far::thread t2{run1};
+  far::thread t3{run1};
+  sleep(3);
+  cond.notify_all();
   t1.join();
   t2.join();
+  t3.join();
+  std::condition_variable c;
   return 0;
 }

@@ -1,6 +1,6 @@
-#ifndef __FAR_JTHREAD_H__
-#define __FAR_JTHREAD_H__
-#include "thread.h"
+#ifndef __FAR_JTHREAD_HH__
+#define __FAR_JTHREAD_HH__
+#include "thread.hh"
 
 namespace far {
 class jthread {

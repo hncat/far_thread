@@ -1,10 +1,10 @@
-#ifndef __FAR_LOCK_H__
-#define __FAR_LOCK_H__
+#ifndef __FAR_LOCK_HH__
+#define __FAR_LOCK_HH__
 
 #include <type_traits>
 
-#include "mutex.h"
-#include "shared_mutex.h"
+#include "mutex.hh"
+#include "shared_mutex.hh"
 
 namespace far {
 #define assert_unlock(__mutex, __owns) assert(__mutex &&__owns)

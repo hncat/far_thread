@@ -4,10 +4,10 @@
 #include <iostream>
 #include <vector>
 
-#include "lock.h"
-#include "mutex.h"
-#include "sem.h"
-#include "thread.h"
+#include "lock.hh"
+#include "mutex.hh"
+#include "sem.hh"
+#include "thread.hh"
 
 class Task {
 public:
@@ -30,7 +30,7 @@ far::sem tsem{0};
 
 void addTask(int num) {
   while (num > 0) {
-    far::lock_guard<far::atomic_lock> lock(tamutex);
+    far::unique_lock<far::atomic_lock> lock(tamutex);
     tasks.emplace_back(++count);
     tsem.post();
     --num;
@@ -38,10 +38,10 @@ void addTask(int num) {
 }
 
 void consumeTask() {
+  sleep(10);
   while (true) {
-    if (!tsem.wait()) {
-      continue;
-    }
+    tsem.wait();
+    printf("consumeTask....\n");
     Task task;
     {
       far::lock_guard<far::atomic_lock> lock(tamutex);
@@ -57,7 +57,7 @@ void consumeTask() {
 }
 
 int main(int argc, char *argv[]) {
-  far::thread t(addTask, 20);
+  far::thread t(addTask, 4);
   far::thread t1(consumeTask);
   far::thread t2(consumeTask);
   t.join();
