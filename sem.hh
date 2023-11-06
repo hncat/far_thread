@@ -8,8 +8,8 @@
 namespace far {
 class sem {
  public:
-  explicit sem(int value, bool shared = false) {
-    int __e = sem_init(&_sem, shared ? 1 : 0, value);
+  explicit sem(int __value, bool __shared = false) {
+    int __e = sem_init(&_sem, __shared ? 1 : 0, __value);
     assert(__e == 0);
   }
   ~sem() {

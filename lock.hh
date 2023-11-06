@@ -18,8 +18,8 @@ class lock_guard {
   typedef Mutex *mutex_pointer;
 
  public:
-  explicit lock_guard(mutex_reference m) : _mutex(m) { _mutex.lock(); }
-  lock_guard(mutex_reference &m, adopt_lock_t) : _mutex(m) {}
+  explicit lock_guard(mutex_reference __m) : _mutex(__m) { _mutex.lock(); }
+  lock_guard(mutex_reference &__m, adopt_lock_t) : _mutex(__m) {}
   ~lock_guard() { _mutex.unlock(); }
   lock_guard(const lock_guard &) = delete;
   lock_guard &operator=(const lock_guard &) = delete;
@@ -38,23 +38,23 @@ class unique_lock {
 
  public:
   unique_lock() : _mutex(nullptr), _owns(false) {}
-  explicit unique_lock(mutex_reference _m)
-      : _mutex(std::addressof(_m)), _owns(false) {
+  explicit unique_lock(mutex_reference __m)
+      : _mutex(std::addressof(__m)), _owns(false) {
     _mutex->lock();
     _owns = true;
   }
-  unique_lock(mutex_reference _m, defer_lock_t)
-      : _mutex(std::addressof(_m)), _owns(false) {}
-  unique_lock(mutex_reference _m, adopt_lock_t)
-      : _mutex(std::addressof(_m)), _owns(true) {}
-  unique_lock(mutex_reference _m, try_lock_t)
-      : _mutex(std::addressof(_m)), _owns(_mutex->try_lock()) {}
-  unique_lock(unique_lock &&_lock) : _mutex(_lock._mutex), _owns(_lock._owns) {
-    _lock._mutex = nullptr;
-    _lock._owns = false;
+  unique_lock(mutex_reference __m, defer_lock_t)
+      : _mutex(std::addressof(__m)), _owns(false) {}
+  unique_lock(mutex_reference __m, adopt_lock_t)
+      : _mutex(std::addressof(__m)), _owns(true) {}
+  unique_lock(mutex_reference __m, try_lock_t)
+      : _mutex(std::addressof(__m)), _owns(_mutex->try_lock()) {}
+  unique_lock(unique_lock &&__lock) : _mutex(__lock._mutex), _owns(__lock._owns) {
+    __lock._mutex = nullptr;
+    __lock._owns = false;
   }
-  unique_lock &operator=(unique_lock &&_lock) {
-    if (this == std::addressof(_lock)) {
+  unique_lock &operator=(unique_lock &&__lock) {
+    if (this == std::addressof(__lock)) {
       return *this;
     }
     if (_owns) {
@@ -62,7 +62,7 @@ class unique_lock {
     }
     _mutex = nullptr;
     _owns = false;
-    _lock.swap(*this);
+    __lock.swap(*this);
     return *this;
   }
   inline void lock() {
@@ -80,9 +80,9 @@ class unique_lock {
     _mutex->unlock();
     _owns = false;
   }
-  inline void swap(unique_lock &_lock) {
-    std::swap(_mutex, _lock._mutex);
-    std::swap(_owns, _lock._owns);
+  inline void swap(unique_lock &__lock) {
+    std::swap(_mutex, __lock._mutex);
+    std::swap(_owns, __lock._owns);
   }
   inline bool owns_lock() const { return _owns; }
   inline mutex_pointer get() { return _mutex; }
@@ -119,23 +119,23 @@ class shared_lock {
 
  public:
   shared_lock() : _mutex(nullptr), _owns(false) {}
-  explicit shared_lock(mutex_reference _m)
-      : _mutex(std::addressof(_m)), _owns(false) {
+  explicit shared_lock(mutex_reference __m)
+      : _mutex(std::addressof(__m)), _owns(false) {
     _mutex->lock_shared();
     _owns = true;
   }
-  shared_lock(mutex_reference _m, defer_lock_t)
-      : _mutex(std::addressof(_m)), _owns(false) {}
-  shared_lock(mutex_reference _m, adopt_lock_t)
-      : _mutex(std::addressof(_m)), _owns(true) {}
-  shared_lock(mutex_reference _m, try_lock_t)
-      : _mutex(std::addressof(_m)), _owns(_mutex->try_lock_shared()) {}
-  shared_lock(shared_lock &&_lock) : _mutex(_lock._mutex), _owns(_lock._owns) {
-    _lock._mutex = nullptr;
-    _lock._owns = false;
+  shared_lock(mutex_reference __m, defer_lock_t)
+      : _mutex(std::addressof(__m)), _owns(false) {}
+  shared_lock(mutex_reference __m, adopt_lock_t)
+      : _mutex(std::addressof(__m)), _owns(true) {}
+  shared_lock(mutex_reference __m, try_lock_t)
+      : _mutex(std::addressof(__m)), _owns(_mutex->try_lock_shared()) {}
+  shared_lock(shared_lock &&__lock) : _mutex(__lock._mutex), _owns(__lock._owns) {
+    __lock._mutex = nullptr;
+    __lock._owns = false;
   }
-  shared_lock &operator=(shared_lock &&_lock) {
-    if (this == std::addressof(_lock)) {
+  shared_lock &operator=(shared_lock &&__lock) {
+    if (this == std::addressof(__lock)) {
       return *this;
     }
     if (_owns) {
@@ -143,7 +143,7 @@ class shared_lock {
     }
     _mutex = nullptr;
     _owns = false;
-    _lock.swap(*this);
+    __lock.swap(*this);
   }
   void lock_shared() {
     assert_lock(_mutex, _owns);
@@ -159,9 +159,9 @@ class shared_lock {
     _mutex->unlock_shared();
     _owns = false;
   }
-  void swap(shared_lock &_lock) {
-    std::swap(_mutex, _lock._mutex);
-    std::swap(_owns, _lock._owns);
+  void swap(shared_lock &__lock) {
+    std::swap(_mutex, __lock._mutex);
+    std::swap(_owns, __lock._owns);
   }
   bool owns_lock() const { return _owns; }
   mutex_pointer get() { return _mutex; }

@@ -8,22 +8,22 @@ class jthread {
   jthread() = default;
 
   template <typename... Args>
-  jthread(Args &&...args) : _t{thread{std::forward<Args>(args)...}} {}
+  jthread(Args &&...__args) : _t{thread{std::forward<Args>(__args)...}} {}
 
   jthread(const jthread &) = delete;
   jthread &operator=(const jthread &) = delete;
 
-  jthread(jthread &&jt) : _t{std::move(jt._t)} {}
+  jthread(jthread &&__jt) : _t{std::move(__jt._t)} {}
 
-  jthread &operator=(jthread &&jt) {
-    if (&jt == this) return *this;
-    jt.swap(*this);
+  jthread &operator=(jthread &&__jt) {
+    if (&__jt == this) return *this;
+    __jt.swap(*this);
     return *this;
   }
 
-  jthread(thread t) : _t{std::move(t)} {}
+  jthread(thread __t) : _t{std::move(__t)} {}
 
-  jthread(thread &&t) : _t{std::move(t)} {}
+  jthread(thread &&__t) : _t{std::move(__t)} {}
 
   ~jthread() {
     if (joinable()) {
@@ -39,10 +39,10 @@ class jthread {
 
   inline thread::handle_t thread_handle() const { return _t.thread_handle(); }
 
-  inline void swap(jthread &jt) { jt._t.swap(_t); }
+  inline void swap(jthread &__jt) { __jt._t.swap(_t); }
 
-  inline void set_affinity_np(uint32_t cpu_code) {
-    _t.set_affinity_np(cpu_code);
+  inline void set_affinity_np(uint32_t __cpu_code) {
+    _t.set_affinity_np(__cpu_code);
   }
 
   inline uint32_t get_affinity_np() const { return _t.get_affinity_np(); }
@@ -52,6 +52,6 @@ class jthread {
  private:
   thread _t;
 };
-inline void swap(jthread &jt1, jthread &jt2) { jt1.swap(jt2); }
+inline void swap(jthread &__jt1, jthread &__jt2) { __jt1.swap(__jt2); }
 }  // namespace far
 #endif

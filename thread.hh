@@ -49,16 +49,16 @@ thread_local uint32_t this_thread::_tid{0};
 thread_local std::string this_thread::_tid_str{""};
 
 template <typename... Args, std::size_t... I>
-inline void threadCallback(std::tuple<Args...> *pack,
+inline void threadCallback(std::tuple<Args...> *__pack,
                            std::index_sequence<I...>) {
-  std::get<1> (*pack)(std::get<I + 2>(*pack)...);
+  std::get<1> (*__pack)(std::get<I + 2>(*__pack)...);
 }
 
 template <typename Obj, typename... Args, std::size_t... I,
           typename = std::enable_if_t<std::is_class<Obj>::value>>
-inline void threadCallback(Obj *obj, std::tuple<Args...> *pack,
+inline void threadCallback(Obj *__obj, std::tuple<Args...> *__pack,
                            std::index_sequence<I...>) {
-  (obj->*std::get<2>(*pack))(std::get<I + 3>(*pack)...);
+  (__obj->*std::get<2>(*__pack))(std::get<I + 3>(*__pack)...);
 }
 
 class thread {
@@ -70,23 +70,23 @@ class thread {
   thread(const thread &) = delete;
   thread &operator=(const thread &) = delete;
 
-  thread(thread &&t) { swap(t); }
+  thread(thread &&__t) { swap(__t); }
 
-  thread &operator=(thread &&t) {
-    if (&t == this) return *this;
+  thread &operator=(thread &&__t) {
+    if (&__t == this) return *this;
     if (_joinable) {
       join();
     }
-    swap(t);
+    swap(__t);
     return *this;
   }
 
   template <typename Func, typename... Args,
             typename = decltype(std::declval<Func>()(std::declval<Args>()...))>
-  thread(Func &&func, Args &&...args) {
+  thread(Func &&__func, Args &&...__args) {
     using pack_type = std::tuple<thread *, Func, Args...>;
-    auto taskPack{new pack_type{this, std::forward<Func>(func),
-                                std::forward<Args>(args)...}};
+    auto taskPack{new pack_type{this, std::forward<Func>(__func),
+                                std::forward<Args>(__args)...}};
     struct ThreadFunc {
       static void *_run(void *arg) {
         auto _taskPack = static_cast<pack_type *>(arg);
@@ -108,10 +108,10 @@ class thread {
             typename = std::enable_if_t<
                 std::is_member_function_pointer<std::decay_t<Func>>::value &&
                 std::is_class<std::decay_t<Obj>>::value>>
-  thread(Func &&func, Obj *obj, Args &&...args) {
+  thread(Func &&__func, Obj *__obj, Args &&...__args) {
     using pack_type = std::tuple<thread *, Obj *, Func, Args...>;
-    auto taskPack{new pack_type{this, obj, std::forward<Func>(func),
-                                std::forward<Args>(args)...}};
+    auto taskPack{new pack_type{this, __obj, std::forward<Func>(__func),
+                                std::forward<Args>(__args)...}};
     struct ThreadFunc {
       static void *_run(void *arg) {
         auto _taskPack = static_cast<pack_type *>(arg);
@@ -169,17 +169,17 @@ class thread {
   /**
    * @brief 交换两个线程
    */
-  inline void swap(thread &t) {
-    std::swap(_joinable, t._joinable);
-    std::swap(_handle, t._handle);
+  inline void swap(thread &__t) {
+    std::swap(_joinable, __t._joinable);
+    std::swap(_handle, __t._handle);
   }
 
   /**
    * @brief 设置线程的cpu绑定
    * @param cpu_code cpu编号
    */
-  inline void set_affinity_np(uint32_t cpu_code) {
-    set_affinity_np(_handle, cpu_code);
+  inline void set_affinity_np(uint32_t __cpu_code) {
+    set_affinity_np(_handle, __cpu_code);
   }
 
   /**
@@ -187,11 +187,11 @@ class thread {
    * @param handle 线程id
    * @param cpu_code cpu编号
    */
-  static inline void set_affinity_np(handle_t handle, uint32_t cpu_code) {
+  static inline void set_affinity_np(handle_t __handle, uint32_t __cpu_code) {
     cpu_set_t cpu_set;
     CPU_ZERO(&cpu_set);
-    CPU_SET(cpu_code, &cpu_set);
-    (void)pthread_setaffinity_np(handle, sizeof(cpu_set_t), &cpu_set);
+    CPU_SET(__cpu_code, &cpu_set);
+    (void)pthread_setaffinity_np(__handle, sizeof(cpu_set_t), &cpu_set);
   }
 
   /**
@@ -208,10 +208,10 @@ class thread {
    * @brief 获取线程绑定的cpu编号
    * @param handle 线程id
    */
-  static inline uint32_t get_affinity_np(handle_t handle) {
+  static inline uint32_t get_affinity_np(handle_t __handle) {
     cpu_set_t cpu_set;
     CPU_ZERO(&cpu_set);
-    pthread_getaffinity_np(handle, sizeof(cpu_set_t), &cpu_set);
+    pthread_getaffinity_np(__handle, sizeof(cpu_set_t), &cpu_set);
     for (int i = 0; i < CPU_SETSIZE; ++i) {
       if (CPU_ISSET(i, &cpu_set)) {
         return i;
@@ -235,6 +235,6 @@ class thread {
 /**
  * @brief 交换两个线程
  */
-inline void swap(thread &t1, thread &t2) { t1.swap(t2); }
+inline void swap(thread &__t1, thread &__t2) { __t1.swap(__t2); }
 }  // namespace far
 #endif
