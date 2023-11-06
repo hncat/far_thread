@@ -10,12 +10,12 @@ namespace far {
 #define assert_unlock(__mutex, __owns) assert(__mutex &&__owns)
 #define assert_lock(__mutex, __owns) assert_lock(__mutex, !__owns)
 
-template <typename Mutex>
+template <typename _Mutex>
 class lock_guard {
  public:
-  typedef Mutex mutex_type;
-  typedef Mutex &mutex_reference;
-  typedef Mutex *mutex_pointer;
+  typedef _Mutex mutex_type;
+  typedef _Mutex &mutex_reference;
+  typedef _Mutex *mutex_pointer;
 
  public:
   explicit lock_guard(mutex_reference __m) : _mutex(__m) { _mutex.lock(); }
@@ -29,12 +29,12 @@ class lock_guard {
   mutex_reference _mutex;
 };
 
-template <typename Mutex>
+template <typename _Mutex>
 class unique_lock {
  public:
-  typedef Mutex mutex_type;
-  typedef Mutex &mutex_reference;
-  typedef Mutex *mutex_pointer;
+  typedef _Mutex mutex_type;
+  typedef _Mutex &mutex_reference;
+  typedef _Mutex *mutex_pointer;
 
  public:
   unique_lock() : _mutex(nullptr), _owns(false) {}
@@ -105,17 +105,17 @@ class unique_lock {
   bool _owns;
 };
 
-template <typename Mutex>
-inline void swap(unique_lock<Mutex> &__x, unique_lock<Mutex> &__y) {
+template <typename _Mutex>
+inline void swap(unique_lock<_Mutex> &__x, unique_lock<_Mutex> &__y) {
   __x.swap(__y);
 }
 
-template <typename Mutex>
+template <typename _Mutex>
 class shared_lock {
  public:
-  typedef Mutex mutex_type;
-  typedef Mutex &mutex_reference;
-  typedef Mutex *mutex_pointer;
+  typedef _Mutex mutex_type;
+  typedef _Mutex &mutex_reference;
+  typedef _Mutex *mutex_pointer;
 
  public:
   shared_lock() : _mutex(nullptr), _owns(false) {}
@@ -184,8 +184,8 @@ class shared_lock {
   bool _owns;
 };
 
-template <typename Mutex>
-void swap(shared_lock<Mutex> &__x, shared_lock<Mutex> &__y) {
+template <typename _Mutex>
+void swap(shared_lock<_Mutex> &__x, shared_lock<_Mutex> &__y) {
   __x.swap(__y);
 }
 }  // namespace far

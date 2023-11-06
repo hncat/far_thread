@@ -60,10 +60,10 @@ class conditional_variable {
    * @param lock 对应unique_lock<mutex>
    * @param func 对应条件函数(条件为true时退出循环等待)
    */
-  template <typename Func, typename... Args,
+  template <typename _Func, typename... _Args,
             typename = typename std::enable_if<
-                !is_result_void<Func, Args...>::value>::type>
-  void wait(unique_lock<mutex> &__lock, Func &&__func, Args &&...__args) {
+                !is_result_void<_Func, _Args...>::value>::type>
+  void wait(unique_lock<mutex> &__lock, _Func &&__func, _Args &&...__args) {
     while (!__func(std::forward<Args>(__args)...)) {
       wait(__lock);
     }

@@ -7,8 +7,8 @@ class jthread {
  public:
   jthread() = default;
 
-  template <typename... Args>
-  jthread(Args &&...__args) : _t{thread{std::forward<Args>(__args)...}} {}
+  template <typename... _Args>
+  jthread(_Args &&...__args) : _t{thread{std::forward<_Args>(__args)...}} {}
 
   jthread(const jthread &) = delete;
   jthread &operator=(const jthread &) = delete;

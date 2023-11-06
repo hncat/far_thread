@@ -48,17 +48,17 @@ struct this_thread {
 thread_local uint32_t this_thread::_tid{0};
 thread_local std::string this_thread::_tid_str{""};
 
-template <typename... Args, std::size_t... I>
-inline void threadCallback(std::tuple<Args...> *__pack,
-                           std::index_sequence<I...>) {
-  std::get<1> (*__pack)(std::get<I + 2>(*__pack)...);
+template <typename... _Args, std::size_t... _I>
+inline void threadCallback(std::tuple<_Args...> *__pack,
+                           std::index_sequence<_I...>) {
+  std::get<1> (*__pack)(std::get<_I + 2>(*__pack)...);
 }
 
-template <typename Obj, typename... Args, std::size_t... I,
-          typename = std::enable_if_t<std::is_class<Obj>::value>>
-inline void threadCallback(Obj *__obj, std::tuple<Args...> *__pack,
-                           std::index_sequence<I...>) {
-  (__obj->*std::get<2>(*__pack))(std::get<I + 3>(*__pack)...);
+template <typename _Obj, typename... _Args, std::size_t... _I,
+          typename = std::enable_if_t<std::is_class<_Obj>::value>>
+inline void threadCallback(_Obj *__obj, std::tuple<_Args...> *__pack,
+                           std::index_sequence<_I...>) {
+  (__obj->*std::get<2>(*__pack))(std::get<_I + 3>(*__pack)...);
 }
 
 class thread {
@@ -81,19 +81,19 @@ class thread {
     return *this;
   }
 
-  template <typename Func, typename... Args,
-            typename = decltype(std::declval<Func>()(std::declval<Args>()...))>
-  thread(Func &&__func, Args &&...__args) {
-    using pack_type = std::tuple<thread *, Func, Args...>;
-    auto taskPack{new pack_type{this, std::forward<Func>(__func),
-                                std::forward<Args>(__args)...}};
+  template <typename _Func, typename... _Args,
+            typename = decltype(std::declval<_Func>()(std::declval<_Args>()...))>
+  thread(_Func &&__func, _Args &&...__args) {
+    using pack_type = std::tuple<thread *, _Func, _Args...>;
+    auto taskPack{new pack_type{this, std::forward<_Func>(__func),
+                                std::forward<_Args>(__args)...}};
     struct ThreadFunc {
       static void *_run(void *arg) {
         auto _taskPack = static_cast<pack_type *>(arg);
         thread *_this = std::get<0>(*_taskPack);
         _this->_id = this_thread::get_id();
         _this->_sem.post();
-        threadCallback(_taskPack, std::make_index_sequence<sizeof...(Args)>());
+        threadCallback(_taskPack, std::make_index_sequence<sizeof...(_Args)>());
         delete _taskPack;
         return nullptr;
       }
@@ -104,14 +104,14 @@ class thread {
     _joinable = true;
   }
 
-  template <typename Func, typename Obj, typename... Args,
+  template <typename _Func, typename _Obj, typename... _Args,
             typename = std::enable_if_t<
-                std::is_member_function_pointer<std::decay_t<Func>>::value &&
-                std::is_class<std::decay_t<Obj>>::value>>
-  thread(Func &&__func, Obj *__obj, Args &&...__args) {
-    using pack_type = std::tuple<thread *, Obj *, Func, Args...>;
-    auto taskPack{new pack_type{this, __obj, std::forward<Func>(__func),
-                                std::forward<Args>(__args)...}};
+                std::is_member_function_pointer<std::decay_t<_Func>>::value &&
+                std::is_class<std::decay_t<_Obj>>::value>>
+  thread(_Func &&__func, _Obj *__obj, _Args &&...__args) {
+    using pack_type = std::tuple<thread *, _Obj *, _Func, _Args...>;
+    auto taskPack{new pack_type{this, __obj, std::forward<_Func>(__func),
+                                std::forward<_Args>(__args)...}};
     struct ThreadFunc {
       static void *_run(void *arg) {
         auto _taskPack = static_cast<pack_type *>(arg);
@@ -119,7 +119,7 @@ class thread {
         _this->_id = this_thread::get_id();
         _this->_sem.post();
         threadCallback(std::get<1>(*_taskPack), _taskPack,
-                       std::make_index_sequence<sizeof...(Args)>());
+                       std::make_index_sequence<sizeof...(_Args)>());
         delete _taskPack;
         return nullptr;
       }
