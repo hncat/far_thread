@@ -37,7 +37,7 @@ class jthread {
 
   inline bool joinable() { return _t.joinable(); }
 
-  inline thread::handle_t thread_handle() const { return _t.thread_handle(); }
+  inline thread::handle_t native_handle() const { return _t.native_handle(); }
 
   inline void swap(jthread &__jt) { __jt._t.swap(_t); }
 

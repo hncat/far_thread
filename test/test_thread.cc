@@ -1,7 +1,6 @@
 #include <unistd.h>
 
 #include <iostream>
-#include <shared_mutex>
 
 #include "lock.hh"
 #include "mutex.hh"
@@ -102,10 +101,12 @@ int main() {
             << far::this_thread::get_id()
             << "\ncore count: " << far::thread::get_core_count()
             << "\ncpu affinity: "
-            << far::thread::get_affinity_np(pthread_self()) << '\n';
+            << far::thread::get_affinity_np(far::this_thread::native_handle())
+            << "\nnative_handle: " << far::this_thread::native_handle()
+            << "\npthread_self: " << pthread_self() << '\n';
   // while (true) {
-  test01();
-  // test02();
+  // test01();
+  test02();
   // test03();
   // test04();
   // }

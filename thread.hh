@@ -15,6 +15,7 @@
 
 namespace far {
 struct this_thread {
+  typedef pthread_t handle_t;
   /**
    * @return 线程id
    */
@@ -39,14 +40,25 @@ struct this_thread {
    * @brief 让出cpu时间片
    */
   static inline void yield() { sched_yield(); }
+  /**
+   * @brief 获取原生的线程句柄
+   */
+  static inline handle_t native_handle() {
+    if (__builtin_expect(_handle == 0, 0)) {
+      _handle = pthread_self();
+    }
+    return _handle;
+  }
 
  private:
   static thread_local uint32_t _tid;
   static thread_local std::string _tid_str;
+  static thread_local handle_t _handle;
 };
 
 thread_local uint32_t this_thread::_tid{0};
 thread_local std::string this_thread::_tid_str{""};
+thread_local this_thread::handle_t this_thread::_handle{0};
 
 template <typename... _Args, std::size_t... _I>
 inline void threadCallback(std::tuple<_Args...> *__pack,
@@ -81,8 +93,9 @@ class thread {
     return *this;
   }
 
-  template <typename _Func, typename... _Args,
-            typename = decltype(std::declval<_Func>()(std::declval<_Args>()...))>
+  template <
+      typename _Func, typename... _Args,
+      typename = decltype(std::declval<_Func>()(std::declval<_Args>()...))>
   thread(_Func &&__func, _Args &&...__args) {
     using pack_type = std::tuple<thread *, _Func, _Args...>;
     auto taskPack{new pack_type{this, std::forward<_Func>(__func),
@@ -164,7 +177,7 @@ class thread {
   /**
    * @brief 获取原生的线程句柄
    */
-  inline handle_t thread_handle() const { return _handle; }
+  inline handle_t native_handle() const { return _handle; }
 
   /**
    * @brief 交换两个线程
